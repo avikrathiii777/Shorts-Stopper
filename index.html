@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Shorts Stopper</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f3ff;
+      --card: #ffffff;
+      --primary: #c4a8f5;
+      --primary-dark: #a782e8;
+      --accent: #f9c6d0;
+      --accent2: #b8e8e0;
+      --text: #4a3f6b;
+      --text-light: #8e84aa;
+      --border: #e8e0f7;
+      --shadow: 0 4px 20px rgba(180,160,240,0.15);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      width: 300px;
+      min-height: 360px;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    /* Soft blobs in background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -60px; right: -60px;
+      width: 180px; height: 180px;
+      background: radial-gradient(circle, #f0e4ff 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -40px; left: -40px;
+      width: 140px; height: 140px;
+      background: radial-gradient(circle, #d6f5f0 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .content { position: relative; z-index: 1; }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .logo {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 3px 10px rgba(196,168,245,0.4);
+    }
+    .header-text h1 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+    }
+    .header-text p {
+      font-size: 10px;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    /* Timer display */
+    .timer-card {
+      background: linear-gradient(135deg, #e8d9ff, #fce4ea);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .timer-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--primary-dark);
+      margin-bottom: 4px;
+    }
+    .timer-display {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+    .timer-display.no-limit {
+      font-size: 14px;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    /* Section label */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-light);
+      margin-bottom: 10px;
+    }
+
+    /* Time buttons */
+    .time-grid {
+      display: flex;
+      gap: 7px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .timeBtn {
+      flex: 1;
+      min-width: 44px;
+      padding: 10px 4px;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .timeBtn:hover {
+      border-color: var(--primary);
+      background: #f5eeff;
+      transform: translateY(-1px);
+    }
+    .timeBtn.selected {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-color: var(--primary-dark);
+      color: white;
+      box-shadow: 0 4px 12px rgba(167,130,232,0.4);
+    }
+    .timeBtn .unit {
+      display: block;
+      font-size: 9px;
+      font-weight: 600;
+      opacity: 0.7;
+      margin-top: 1px;
+    }
+
+    /* Confirm button */
+    .confirm-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(167,130,232,0.35);
+      margin-bottom: 12px;
+    }
+    .confirm-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(167,130,232,0.45);
+    }
+    .confirm-btn:active { transform: translateY(0); }
+
+    /* Status */
+    #status {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 14px;
+    }
+    #status.active {
+      color: #7ec8a4;
+    }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1.5px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    /* Setup button */
+    .setup-btn {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .setup-btn:hover {
+      border-color: var(--accent2);
+      color: #4fb8a8;
+      background: #f0faf8;
+    }
+
+    /* Reset info */
+    .reset-note {
+      text-align: center;
+      font-size: 9.5px;
+      color: var(--text-light);
+      margin-top: 10px;
+      opacity: 0.8;
+    }
+
+    /* Fade-in animation */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .content > * {
+      animation: fadeUp 0.35s ease both;
+    }
+    .content > *:nth-child(1) { animation-delay: 0.05s; }
+    .content > *:nth-child(2) { animation-delay: 0.10s; }
+    .content > *:nth-child(3) { animation-delay: 0.15s; }
+    .content > *:nth-child(4) { animation-delay: 0.20s; }
+    .content > *:nth-child(5) { animation-delay: 0.25s; }
+    .content > *:nth-child(6) { animation-delay: 0.30s; }
+    .content > *:nth-child(7) { animation-delay: 0.35s; }
+  </style>
+</head>
+<body>
+<div class="content">
+
+  <div class="header">
+    <div class="logo">⏱️</div>
+    <div class="header-text">
+      <h1>Shorts Stopper</h1>
+      <p>Take back your time</p>
+    </div>
+  </div>
+
+  <div class="timer-card">
+    <div class="timer-label">Time Remaining Today</div>
+    <div class="timer-display no-limit" id="timerDisplay">No limit set</div>
+  </div>
+
+  <div class="section-label">Set Daily Limit</div>
+
+  <div class="time-grid" id="timeOptions">
+    <button class="timeBtn" id="1">1<span class="unit">min</span></button>
+    <button class="timeBtn" id="5">5<span class="unit">min</span></button>
+    <button class="timeBtn" id="10">10<span class="unit">min</span></button>
+    <button class="timeBtn" id="20">20<span class="unit">min</span></button>
+    <button class="timeBtn" id="30">30<span class="unit">min</span></button>
+  </div>
+
+  <button class="confirm-btn" id="confirmBtn">✓ Set Limit</button>
+
+  <p id="status">No limit set</p>
+
+  <hr class="divider">
+
+  <button class="setup-btn" id="setupBtn">🎯 Manage Interests</button>
+
+  <p class="reset-note">⏰ Limit resets automatically at midnight</p>
+
+</div>
+
+<script src="index.js"></script>
+</body>
+</html>

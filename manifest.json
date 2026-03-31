@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Shorts Stopper",
+  "version": "1.0",
+  "description": "Limits YouTube Shorts usage",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://www.youtube.com/*"
+  ],
+  "action": {
+    "default_popup": "index.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Prove You Mean It</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f3ff;
+      --card: #ffffff;
+      --primary: #c4a8f5;
+      --primary-dark: #a782e8;
+      --accent: #f9c6d0;
+      --accent2: #b8e8e0;
+      --text: #4a3f6b;
+      --text-light: #8e84aa;
+      --border: #e8e0f7;
+      --shadow: 0 4px 20px rgba(180,160,240,0.15);
+      --radius: 16px;
+      --error: #f2a0b0;
+      --success: #7ecfc0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      width: 300px;
+      padding: 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -60px; right: -60px;
+      width: 180px; height: 180px;
+      background: radial-gradient(circle, #ffe4ea 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -40px; left: -40px;
+      width: 140px; height: 140px;
+      background: radial-gradient(circle, #e4d9ff 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .content { position: relative; z-index: 1; }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .logo {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--accent), #f5a8bc);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 3px 10px rgba(249,198,208,0.5);
+    }
+    .header-text h1 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .header-text p {
+      font-size: 10px;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    .info-box {
+      background: linear-gradient(135deg, #fce9ed, #f5e4ff);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: 11px;
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.5;
+    }
+    .info-box strong { color: var(--primary-dark); }
+
+    /* Passage display */
+    .passage-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+    }
+
+    .passage-box {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--text);
+      font-weight: 600;
+      position: relative;
+      max-height: 110px;
+      overflow-y: auto;
+      word-break: break-word;
+    }
+
+    /* Character-level coloring */
+    .passage-box .char { display: inline; }
+    .passage-box .char.correct { color: #7ecfc0; }
+    .passage-box .char.incorrect { color: #e07090; background: #fde4ea; border-radius: 2px; }
+    .passage-box .char.current {
+      background: var(--primary);
+      color: white;
+      border-radius: 3px;
+    }
+
+    /* Typing input */
+    .typing-area {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-family: 'Nunito', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s;
+      min-height: 70px;
+      margin-bottom: 10px;
+    }
+    .typing-area:focus { border-color: var(--primary); }
+    .typing-area.error { border-color: var(--error); }
+    .typing-area.success { border-color: var(--success); }
+
+    /* Progress bar */
+    .progress-wrap {
+      background: var(--border);
+      border-radius: 99px;
+      height: 6px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 99px;
+      transition: width 0.2s ease, background 0.3s ease;
+    }
+    .progress-bar.done {
+      background: linear-gradient(90deg, var(--success), #a8edd4);
+    }
+
+    /* Feedback message */
+    #feedback {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-light);
+      margin-bottom: 10px;
+      min-height: 16px;
+      transition: color 0.2s;
+    }
+    #feedback.error { color: #d05070; }
+    #feedback.success { color: #3da090; }
+
+    /* Action buttons */
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+    .cancel-btn {
+      flex: 1;
+      padding: 11px;
+      background: transparent;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cancel-btn:hover { border-color: var(--primary); color: var(--text); }
+
+    .confirm-btn {
+      flex: 2;
+      padding: 11px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(167,130,232,0.35);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .confirm-btn.ready {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .confirm-btn.ready:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(167,130,232,0.45);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .content > * {
+      animation: fadeUp 0.3s ease both;
+    }
+    .content > *:nth-child(1) { animation-delay: 0.05s; }
+    .content > *:nth-child(2) { animation-delay: 0.10s; }
+    .content > *:nth-child(3) { animation-delay: 0.15s; }
+    .content > *:nth-child(4) { animation-delay: 0.18s; }
+    .content > *:nth-child(5) { animation-delay: 0.20s; }
+    .content > *:nth-child(6) { animation-delay: 0.22s; }
+    .content > *:nth-child(7) { animation-delay: 0.25s; }
+    .content > *:nth-child(8) { animation-delay: 0.28s; }
+  </style>
+</head>
+<body>
+<div class="content">
+
+  <div class="header">
+    <div class="logo">✍️</div>
+    <div class="header-text">
+      <h1>Prove You Mean It</h1>
+      <p>Type the passage to change your limit</p>
+    </div>
+  </div>
+
+  <div class="info-box">
+    You already set a limit today. To change it, type the passage below <strong>exactly</strong> — no copy-pasting!
+  </div>
+
+  <div class="passage-label">Type this passage</div>
+
+  <div class="passage-box" id="passageDisplay"></div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <textarea
+    class="typing-area"
+    id="typingInput"
+    placeholder="Start typing here..."
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="false"
+  ></textarea>
+
+  <div id="feedback">Begin typing to unlock</div>
+
+  <div class="btn-row">
+    <button class="cancel-btn" id="cancelBtn">Cancel</button>
+    <button class="confirm-btn" id="confirmBtn">Change Limit →</button>
+  </div>
+
+</div>
+<script src="challenge.js"></script>
+</body>
+</html>
