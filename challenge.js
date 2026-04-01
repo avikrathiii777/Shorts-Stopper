@@ -1,5 +1,5 @@
 // The passage the user must type to change their limit
-const PASSAGE = "Focused time is a finite resource. Every minute spent scrolling is a minute taken from something that matters — your goals, your creativity, your growth. Choosing to be intentional today is the first step toward a more productive tomorrow.";
+const PASSAGE = "Focused time is a finite resource. Every minute spent scrolling is a minute taken from something that matters - your goals, your creativity, your growth. Choosing to be intentional today is the first step toward a more productive tomorrow.";
 
 const passageDisplay = document.getElementById('passageDisplay');
 const typingInput   = document.getElementById('typingInput');
